@@ -169,6 +169,7 @@ export async function activate(context: vscode.ExtensionContext) {
           await mh.handleKeyEvent(args.text);
         }
       },
+      name: `handle ${ args.text === "\n" ? "<enter>" : args.text }`,
       isRunning: false
     });
   });
@@ -189,6 +190,7 @@ export async function activate(context: vscode.ExtensionContext) {
           mh.vimState.cursorStartPosition = Position.FromVSCodePosition(vscode.window.activeTextEditor.selection.start);
         }
       },
+      name: `replacePreviousChar ${ args.text }`,
       isRunning: false
     });
   });
@@ -199,6 +201,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const mh = await getAndUpdateModeHandler();
         compositionState.isInComposition = true;
       },
+      name: `compositionStart`,
       isRunning: false
     });
   });
@@ -211,6 +214,7 @@ export async function activate(context: vscode.ExtensionContext) {
         compositionState = new CompositionState();
         await mh.handleMultipleKeyEvents(text.split(""));
       },
+      name: `compositionEnd`,
       isRunning: false
     });
   });
@@ -266,6 +270,7 @@ async function handleKeyEvent(key: string): Promise<void> {
 
   taskQueue.enqueueTask({
     promise   : async () => { await mh.handleKeyEvent(key); },
+    name: `handleKeyEvent ${ key }`,
     isRunning : false
   });
 }
@@ -292,6 +297,7 @@ async function handleActiveEditorChange(): Promise<void> {
         mh.updateView(mh.vimState, false);
       }
     },
+    name: `handleActiveEditorChange`,
     isRunning: false
   });
 }

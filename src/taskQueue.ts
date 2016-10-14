@@ -3,6 +3,7 @@ import * as _ from "lodash";
 export interface IEnqueuedTask {
   promise  : () => Promise<void>;
   isRunning: boolean;
+  name     : string;
 }
 
 /**
@@ -13,13 +14,28 @@ export interface IEnqueuedTask {
 class TaskQueue {
   private _tasks: IEnqueuedTask[] = [];
 
+  public get taskCount(): number {
+    return this._tasks.filter(x => x.name.indexOf("handleKeyEvent") > -1).length;
+  }
+
   private async _runTasks(): Promise<void> {
     while (this._tasks.length > 0) {
       let task: IEnqueuedTask = this._tasks[0];
 
       try {
+        console.log(' === begin new task === ');
+        (console as any).timeEnd('everything else');
+
         task.isRunning = true;
+
+        (console as any).time(task.name);
+
         await task.promise();
+
+        (console as any).timeEnd(task.name);
+
+        (console as any).time('everything else');
+
         task.isRunning = false;
       } catch (e) {
         console.log(e);
